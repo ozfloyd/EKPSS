@@ -5,11 +5,14 @@
     <meta name="viewport"    content="width=device-width">
     <meta name="author"      content="M A Eyler, Istanbul, 2020" />
     <meta name="description" content="EKPSS" />
-    <!-- <link rel="manifest" href="manifest.json"> -->
-    <!-- <link rel="icon" href="image/icon.png"> -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="image/icon.png">
     <title>EKPSS</title>
 
 <style>
+  body, #title { 
+    margin: 0;
+  }
   #quiz {
     max-width: 400px;
     background: #bdf;
@@ -17,12 +20,10 @@
     font: 16px arial;
   }
   #score {
-    position: absolute;
-    top: 8px; right: 8px;
-    font-size: 14px;
-  }
-  #title {
-    margin: 0;
+    text-align: right;
+    position: relative;
+    top: -8px;
+    font-size: 13px;
   }
   #question {
     height: 4em;
@@ -40,6 +41,7 @@
   }
   button {
     font-weight: bold;
+    font-size: large;
     margin: 5px 12px;
     border: none;
     width: 60px;
@@ -59,15 +61,16 @@
   }
   #control {
     padding-bottom: 20px;
-}
+  }
+  pre { margin: 12px; }
 </style>
   </head>
   
   <body>
 
 <div id=quiz>
+  <div id=score>.</div>
   <h2 id=title></h2>
-  <div id=score></div>
   <p id=question></p>
   <ul id=list>
     <li id=a0></li>
@@ -165,7 +168,8 @@ function report() {
     if (i >= 0) {
       display(i); s = (i+1)+'. soru eksik'
     }
-    alert(s+'\n\n'+score.innerText)
+    s += '\n\n'+score.innerText
+    setTimeout(() => alert(s), 5)
 }
 function doKey(evt) {
     let k = evt.key.toUpperCase()
@@ -189,7 +193,7 @@ function doKey(evt) {
         default: return
     }
 }
-    const VERSION = "V0.1"
+    const VERSION = "V0.2"
     const LI = [...list.querySelectorAll('LI')]
     const data = []  //mutable
     var current, nc, ne, time //variable
