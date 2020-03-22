@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport"    content="width=device-width">
+    <meta name="author"      content="M A Eyler, Istanbul, 2020" />
+    <meta name="description" content="EKPSS" />
+    <!-- <link rel="manifest" href="manifest.json"> -->
+    <!-- <link rel="icon" href="image/icon.png"> -->
+    <title>EKPSS</title>
+
+<style>
+  #quiz {
+    max-width: 400px;
+    background: #bdf;
+    padding: 16px;
+    font: 16px arial;
+  }
+  #score {
+    position: absolute;
+    top: 8px; right: 8px;
+    font-size: 14px;
+  }
+  #title {
+    margin: 0;
+  }
+  #question {
+    height: 4em;
+    background: #118;
+    color: #ffd;
+    border-radius: 15px;
+    padding: 20px;
+  }
+  li {
+    list-style-type: upper-latin;
+    width: 85%;
+    margin: 15px;
+    padding: 10px;
+    border-radius: 15px;
+  }
+  button {
+    font-weight: bold;
+    margin: 5px 12px;
+    border: none;
+    width: 60px;
+    height: 35px;
+    border-radius: 15px;
+  }
+  li, button {
+    background: #ffd;
+    color: #000000;
+    cursor: pointer;
+  }
+  #result, #control{
+    padding-left: 12%;
+    white-space: nowrap;
+    width: 85%;
+    height: 1em;
+  }
+  #control {
+    padding-bottom: 20px;
+}
+</style>
+  </head>
+  
+  <body>
+
+<div id=quiz>
+  <h2 id=title></h2>
+  <div id=score></div>
+  <p id=question></p>
+  <ul id=list>
+    <li id=a0></li>
+    <li id=a1></li>
+    <li id=a2></li>
+    <li id=a3></li>
+    <li id=a4></li>
+  </ul>
+  <p id=result></p>
+  <p id=control>
+    <button id=leftB>◁</button>
+    <button id=answer>?</button>
+    <button id=rightB>▷</button>
+  </p>
+</div>
+<pre id=out></pre>
+
+<script>
+function readText(u) {
+    title.innerText = u
+    fetch("sinav/"+u+".txt").then(r => r.text())
+    .then(t => makeData(t.split('\n')))
+}
+function makeData(a) {
+    data.length = 0  //clear
+    console.assert(a.length%7 == 0)
+    for (let i=0; i<a.length; i+=7) {
+        let soru = a[i].trim()
+        let liste = []
+        for (let k=1; k<6; k++) //trim A..E & \r
+            liste.push(a[i+k].substring(3).trim())
+        let dogru = a[i+6].charCodeAt(0)-65
+        //String.fromCharCode(65+dogru)
+        console.assert(dogru>=0 && dogru<5)
+        data.push({soru, dogru, liste})
+    }
+    out.innerText = data.length+' soru -- '+VERSION
+    nc = 0; ne = 0; display(0)  //start
+    return data
+}
+function display(k) { //k is question number
+    clearTimeout(time)
+    if (k == data.length) report()
+    if (k<0 || k>=data.length) return
+    current = k; let d = data[k]
+    question.innerText = d.soru
+    result.innerText = ''
+    let used = new Set()
+    for (let x of LI) { //randomize items
+      let i
+      do { //find random index of next item
+        i = Math.trunc(5*Math.random())
+      } while (used.has(i))
+      used.add(i)
+      x.innerText = d.liste[i]
+      x.correct = (i == d.dogru)
+      setStyle(x)
+    }
+}
+function setStyle(x) {
+    let d = data[current]
+    if (x.innerText == d.cevap) {
+      let OK = (d.cevap == d.liste[d.dogru])
+      x.style.background = OK? '#118' : '#a00'
+      x.style.color = '#ffd'
+    } else { //use default colors
+      x.style = ''
+    }
+}
+function showAnswer() {
+    let x = LI.find(e => e.correct)
+    if (!x) return
+    x.style.background = '#afa' //light green
+    //setTimeout(() => x.style = '', 2500)
+}
+function checkAnswer(evt) {
+    let d = data[current]
+    if (d.cevap) return //already answered
+    let x = evt.target
+    d.cevap = x.innerText
+    setStyle(x)
+    let s1 = ''
+    if (x.correct) {
+      s1 = 'Doğru!'; nc++
+    } else {
+      s1 = 'Olmadı'; ne++
+      showAnswer()
+    }
+    score.innerText = nc+' Doğru, '+ne+' Yanlış'
+    time = setTimeout(() => rightB.onclick(), 3000)
+}
+function report() {
+    let s = 'Sınav tamamlandı'
+    let i = data.findIndex(e => !e.cevap)
+    if (i >= 0) {
+      display(i); s = (i+1)+'. soru eksik'
+    }
+    alert(s+'\n\n'+score.innerText)
+}
+function doKey(evt) {
+    let k = evt.key.toUpperCase()
+    switch (k) {
+        case 'A':
+            a0.click(); break
+        case 'B':
+            a1.click(); break
+        case 'C':
+            a2.click(); break
+        case 'D':
+            a3.click(); break
+        case 'E':
+            a4.click(); break
+        case 'ARROWLEFT':
+            leftB.click(); break
+        case 'ESCAPE':
+            answer.click(); break
+        case 'ARROWRIGHT':
+            rightB.click(); break
+        default: return
+    }
+}
+    const VERSION = "V0.1"
+    const LI = [...list.querySelectorAll('LI')]
+    const data = []  //mutable
+    var current, nc, ne, time //variable
+    readText("Genel Kültür")
+    leftB.onclick  = () => {display(current-1)}
+    answer.onclick = showAnswer
+    rightB.onclick = () => {display(current+1)}
+    list.onclick = checkAnswer
+    document.onkeydown = doKey
+</script>
+    
+  </body>
+</html>
