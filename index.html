@@ -10,14 +10,23 @@
     <title>EKPSS</title>
 
 <style>
-  body, #title { 
+  body, h2, h3 { 
     margin: 0;
+    max-width: 440px;
+    font: 16px arial;
+  }
+  #main { 
+    height: 520px;
+    background: #77ffaa;
+    padding: 16px;
   }
   #quiz {
-    max-width: 400px;
+    max-width: 410px;
+    width: 90%;
+    position: fixed;
+    top: 0; left: 0;
     background: #bdf;
     padding: 16px;
-    font: 16px arial;
   }
   #score {
     text-align: right;
@@ -67,12 +76,20 @@
   </head>
   
   <body>
+<div id=main>
+  <h1>EKPSS</h1>
+  <h2>Örnek Sınavlar</h2>
+  <ol id=files>
+    <li>Genel Kültür 0</li>
+    <li>Genel Kültür 1</li>
+  </ol>
+</div>
 
-<div id=quiz>
+<div id=quiz hidden>
   <div id=score>.</div>
   <h2 id=title></h2>
   <p id=question></p>
-  <ul id=list>
+  <ul id=items>
     <li id=a0></li>
     <li id=a1></li>
     <li id=a2></li>
@@ -89,10 +106,17 @@
 <pre id=out></pre>
 
 <script>
-function readText(u) {
-    title.innerText = u
-    fetch("sinav/"+u+".txt").then(r => r.text())
-    .then(t => makeData(t.split('\n')))
+function mainMenu(evt) {
+    openQuiz(evt.target.innerText)
+}
+function openQuiz(q) {
+    quiz.hidden = false
+    readText('sinav'+'/'+q, makeData)
+    title.innerText = q
+}
+function readText(u, callback) {
+    fetch(u+".txt").then(r => r.text())
+    .then(t => callback(t.split('\n')))
 }
 function makeData(a) {
     data.length = 0  //clear
@@ -152,24 +176,29 @@ function checkAnswer(evt) {
     let x = evt.target
     d.cevap = x.innerText
     setStyle(x)
-    let s1 = ''
+    let s1 = '', s2 = ''
     if (x.correct) {
-      s1 = 'Doğru!'; nc++
+      s1 = 'Doğru!'; s2 = "green"; nc++
     } else {
-      s1 = 'Olmadı'; ne++
+      s1 = 'Olmadı'; s2 = "red"; ne++
       showAnswer()
     }
+    result.innerText = s1
+    result.style.color = s2
     score.innerText = nc+' Doğru, '+ne+' Yanlış'
     time = setTimeout(() => rightB.onclick(), 3000)
 }
 function report() {
-    let s = 'Sınav tamamlandı'
     let i = data.findIndex(e => !e.cevap)
-    if (i >= 0) {
-      display(i); s = (i+1)+'. soru eksik'
+    if (i >= 0) { //incomplete
+      display(i)
+      let s = (i+1)+'. soru eksik'
+          +'\n\n'+score.innerText
+      setTimeout(() => alert(s), 3)
+    } else { //OK, close the page
+      alert('Sınav tamamlandı') 
+      quiz.hidden = true
     }
-    s += '\n\n'+score.innerText
-    setTimeout(() => alert(s), 5)
 }
 function doKey(evt) {
     let k = evt.key.toUpperCase()
@@ -184,6 +213,10 @@ function doKey(evt) {
             a3.click(); break
         case 'E':
             a4.click(); break
+        case 'HOME':
+            display(0); break
+        case 'END':
+            report(); break
         case 'ARROWLEFT':
             leftB.click(); break
         case 'ESCAPE':
@@ -193,15 +226,16 @@ function doKey(evt) {
         default: return
     }
 }
-    const VERSION = "V0.2"
-    const LI = [...list.querySelectorAll('LI')]
+    const VERSION = "V0.3"
+    const LI = [...items.querySelectorAll('LI')]
     const data = []  //mutable
     var current, nc, ne, time //variable
-    readText("Genel Kültür")
+    out.innerText = VERSION
     leftB.onclick  = () => {display(current-1)}
     answer.onclick = showAnswer
     rightB.onclick = () => {display(current+1)}
-    list.onclick = checkAnswer
+    items.onclick = checkAnswer
+    files.onclick = mainMenu
     document.onkeydown = doKey
 </script>
     
