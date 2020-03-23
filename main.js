@@ -1,130 +1,5 @@
-<!DOCTYPE html>
-<html lang="en-US">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"    content="width=device-width">
-    <meta name="author"      content="M A Eyler, Istanbul, 2020" />
-    <meta name="description" content="EKPSS" />
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="image/icon.png">
-    <title>EKPSS</title>
+"use strict";
 
-<style>
-  body, h2, h3 { 
-    margin: 0;
-    max-width: 440px;
-  }
-  body, select, option { 
-    font: 16px arial;
-  }
-  select, option {
-    padding: 8px;
-    margin: 10px;
-  }
-  #main { 
-    height: 520px;
-    background: #7fa;
-    padding: 16px;
-  }
-  #quiz {
-    max-width: 416px;
-    width: 92%;
-    position: absolute;
-    top: 0; left: 0;
-    background: #bdf;
-    padding: 16px;
-  }
-  #score {
-    text-align: right;
-    position: relative;
-    top: -8px;
-    font-size: 13px;
-  }
-  #question {
-    min-height: 4em;
-    background: #118;
-    color: #ffd;
-    border-radius: 15px;
-    padding: 20px;
-  }
-  li {
-    list-style-type: upper-latin;
-    width: 85%;
-    margin: 15px;
-    padding: 10px;
-    border-radius: 15px;
-  }
-  button {
-    font-weight: bold;
-    font-size: large;
-    margin: 5px 12px;
-    border: none;
-    width: 60px;
-    height: 35px;
-    border-radius: 15px;
-  }
-  li, button {
-    background: #ffd;
-    color: #000;
-    cursor: pointer;
-  }
-  #result, #control{
-    padding-left: 12%;
-    white-space: nowrap;
-    width: 85%;
-    height: 1em;
-  }
-  #control {
-    padding-bottom: 20px;
-  }
-  #out { 
-    margin: 12px;
-    position: fixed;
-    bottom: 0;  
-  }
-</style>
-  </head>
-  
-  <body>
-<div id=main>
-  <h1>EKPSS</h1>
-  <h2>Örnek Sınavlar</h2>
-  <p>Ya List item...</p>
-  <ol id=files>
-    <li>Genel Kültür 0</li>
-    <li>Genel Kültür 1</li>
-  </ol>
-  <p>&nbsp;</p>
-  <p>...ya da Select</p>
-  <select id=menu autofocus>
-    <option selected disabled>_Sınav seçin_</option>
-    <option>Genel Kültür 0</option>
-    <option>Genel Kültür 1</option>
-  </select>
-  <pre id=out></pre>
-</div>
-
-<div id=quiz hidden>
-  <div id=score>.</div>
-  <h2 id=title></h2>
-  <p id=question></p>
-  <ul id=items>
-    <li id=a0></li>
-    <li id=a1></li>
-    <li id=a2></li>
-    <li id=a3></li>
-    <li id=a4></li>
-  </ul>
-  <p id=result></p>
-  <p id=control>
-    <button id=leftB>◁</button>
-    <button id=answer>?</button>
-    <button id=rightB>▷</button>
-  </p>
-  <!-- <pre id=out2></pre> -->
-</div>
-
-<script>
 function mainClick(evt) {
     openQuiz(evt.target.innerText)
 }
@@ -155,7 +30,7 @@ function makeData(a) {
     }
     // out2.innerText = data.length+' soru -- '+VERSION
     nc = 0; ne = 0; display(0)  //start
-    return data
+    score.innerText = '.'
 }
 function display(k) { //k is question number minus one
     clearTimeout(time)
@@ -215,6 +90,7 @@ function closeQuiz() {
   function confirmClose() {
     let s = result.innerText +'\n\nDevam edelim mi?'
     if (!confirm(s)) quiz.hidden = true
+    else result.innerText = ''
   }
     let i = data.findIndex(e => !e.cevap)
     if (i >= 0) { //incomplete
@@ -253,7 +129,7 @@ function doKey(evt) {
         default: return
     }
 }
-    const VERSION = "V0.4"
+    const VERSION = "V0.5"
     const LI = [...items.querySelectorAll('LI')]
     const data = []  //Array of objects
     var current, //item number >=0
@@ -268,7 +144,3 @@ function doKey(evt) {
     files.onclick = mainClick
     menu.onchange = mainMenu
     document.onkeydown = doKey
-</script>
-    
-  </body>
-</html>
