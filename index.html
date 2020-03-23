@@ -13,17 +13,23 @@
   body, h2, h3 { 
     margin: 0;
     max-width: 440px;
+  }
+  body, select, option { 
     font: 16px arial;
+  }
+  select, option {
+    padding: 8px;
+    margin: 10px;
   }
   #main { 
     height: 520px;
-    background: #77ffaa;
+    background: #7fa;
     padding: 16px;
   }
   #quiz {
-    max-width: 410px;
-    width: 90%;
-    position: fixed;
+    max-width: 416px;
+    width: 92%;
+    position: absolute;
     top: 0; left: 0;
     background: #bdf;
     padding: 16px;
@@ -35,7 +41,7 @@
     font-size: 13px;
   }
   #question {
-    height: 4em;
+    min-height: 4em;
     background: #118;
     color: #ffd;
     border-radius: 15px;
@@ -59,7 +65,7 @@
   }
   li, button {
     background: #ffd;
-    color: #000000;
+    color: #000;
     cursor: pointer;
   }
   #result, #control{
@@ -71,7 +77,11 @@
   #control {
     padding-bottom: 20px;
   }
-  pre { margin: 12px; }
+  #out { 
+    margin: 12px;
+    position: fixed;
+    bottom: 0;  
+  }
 </style>
   </head>
   
@@ -79,10 +89,19 @@
 <div id=main>
   <h1>EKPSS</h1>
   <h2>Örnek Sınavlar</h2>
+  <p>Ya List item...</p>
   <ol id=files>
     <li>Genel Kültür 0</li>
     <li>Genel Kültür 1</li>
   </ol>
+  <p>&nbsp;</p>
+  <p>...ya da Select</p>
+  <select id=menu autofocus>
+    <option selected disabled>_Sınav seçin_</option>
+    <option>Genel Kültür 0</option>
+    <option>Genel Kültür 1</option>
+  </select>
+  <pre id=out></pre>
 </div>
 
 <div id=quiz hidden>
@@ -102,12 +121,15 @@
     <button id=answer>?</button>
     <button id=rightB>▷</button>
   </p>
+  <!-- <pre id=out2></pre> -->
 </div>
-<pre id=out></pre>
 
 <script>
-function mainMenu(evt) {
+function mainClick(evt) {
     openQuiz(evt.target.innerText)
+}
+function mainMenu(evt) {
+    openQuiz(evt.target.value)
 }
 function openQuiz(q) {
     quiz.hidden = false
@@ -131,14 +153,15 @@ function makeData(a) {
         console.assert(dogru>=0 && dogru<5)
         data.push({soru, dogru, liste})
     }
-    out.innerText = data.length+' soru -- '+VERSION
+    // out2.innerText = data.length+' soru -- '+VERSION
     nc = 0; ne = 0; display(0)  //start
     return data
 }
-function display(k) { //k is question number
+function display(k) { //k is question number minus one
     clearTimeout(time)
-    if (k == data.length) report()
-    if (k<0 || k>=data.length) return
+    if (k<0 || k>=data.length) {
+      closeQuiz(); return
+    }
     current = k; let d = data[k]
     question.innerText = d.soru
     result.innerText = ''
@@ -171,16 +194,17 @@ function showAnswer() {
     //setTimeout(() => x.style = '', 2500)
 }
 function checkAnswer(evt) {
+    let x = evt.target
+    if (x.tagName != 'LI') return
     let d = data[current]
     if (d.cevap) return //already answered
-    let x = evt.target
     d.cevap = x.innerText
     setStyle(x)
     let s1 = '', s2 = ''
     if (x.correct) {
-      s1 = 'Doğru!'; s2 = "green"; nc++
+      s1 = 'Doğru!'; s2 = "#000"; nc++
     } else {
-      s1 = 'Olmadı'; s2 = "red"; ne++
+      s1 = 'Olmadı'; s2 = "#b00"; ne++
       showAnswer()
     }
     result.innerText = s1
@@ -188,18 +212,23 @@ function checkAnswer(evt) {
     score.innerText = nc+' Doğru, '+ne+' Yanlış'
     time = setTimeout(() => rightB.onclick(), 3000)
 }
-function report() {
+function closeQuiz() {
+  function confirmClose() {
+    let s = result.innerText +'\n\nDevam edelim mi?'
+    if (!confirm(s)) quiz.hidden = true
+  }
     let i = data.findIndex(e => !e.cevap)
     if (i >= 0) { //incomplete
       display(i)
       let s = (i+1)+'. soru eksik'
-          +'\n\n'+score.innerText
-      setTimeout(() => alert(s), 3)
+      //  +'\n\n'+score.innerText
+      result.innerText = s
+      setTimeout(confirmClose, 3)
     } else { //OK, close the page
       alert('Sınav tamamlandı') 
       quiz.hidden = true
     }
-}
+  }
 function doKey(evt) {
     let k = evt.key.toUpperCase()
     switch (k) {
@@ -216,7 +245,7 @@ function doKey(evt) {
         case 'HOME':
             display(0); break
         case 'END':
-            report(); break
+            closeQuiz(); break
         case 'ARROWLEFT':
             leftB.click(); break
         case 'ESCAPE':
@@ -226,16 +255,20 @@ function doKey(evt) {
         default: return
     }
 }
-    const VERSION = "V0.3"
+    const VERSION = "V0.4"
     const LI = [...items.querySelectorAll('LI')]
-    const data = []  //mutable
-    var current, nc, ne, time //variable
+    const data = []  //Array of objects
+    var current, //item number >=0
+      nc,   //number of correct answers
+      ne,   //number of wrong answers
+      time  //value returned from setTimeout
     out.innerText = VERSION
     leftB.onclick  = () => {display(current-1)}
     answer.onclick = showAnswer
     rightB.onclick = () => {display(current+1)}
     items.onclick = checkAnswer
-    files.onclick = mainMenu
+    files.onclick = mainClick
+    menu.onchange = mainMenu
     document.onkeydown = doKey
 </script>
     
