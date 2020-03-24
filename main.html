@@ -60,32 +60,20 @@
     }
 
 // from  https://love2dev.com/blog/beforeinstallprompt/
-var pevt
+var pevt  //BeforeInstallPromptEvent
+window.onbeforeinstallprompt = beforeinstallCB
 function beforeinstallCB(e) {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt 
-    e.preventDefault(); 
-    // Stash the event so it can be triggered later. 
-    pevt = e;
-    //let add2hs = document.querySelector("#add2hs"); 
-    add2hs.style.display = "block"; 
-    add2hs.addEventListener("click", addToHomeScreen)
+    // Prevent Chrome 67 from showing the prompt 
+    e.preventDefault(); pevt = e
+    //let add2hs = document.querySelector("#add2hs")
+    add2hs.style.display = "block"
+    add2hs.onclick = addToHomeScreen
 }
-window.addEventListener('beforeinstallprompt', beforeinstallCB)
 function addToHomeScreen() {
-  function report(res){
-    if (res.outcome === 'accepted') { 
-      console.log('accepted the A2HS prompt'); 
-    } else { 
-      console.log('dismissed the A2HS prompt'); 
-    } 
-    pevt = null;
-  }
-    //let add2hs = document.querySelector("#add2hs");
-    // hide our user interface that shows our A2HS button 
-    add2hs.style.display = 'none';
-    pevt.prompt();
+    //let add2hs = document.querySelector("#add2hs")
+    add2hs.style.display = 'none'; pevt.prompt()
     // Wait for the user to respond to the prompt 
-    pevt.userChoice.then(report)
+    pevt.userChoice.then(console.log); pevt = null
 }
 </script>
     

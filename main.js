@@ -1,5 +1,5 @@
 "use strict";
-
+const VERSION = 'V0.6'
 function mainClick(evt) {
     openQuiz(evt.target.innerText)
 }
@@ -129,7 +129,6 @@ function doKey(evt) {
         default: return
     }
 }
-    const VERSION = "V0.5"
     const LI = [...items.querySelectorAll('LI')]
     const data = []  //Array of objects
     var current, //item number >=0

@@ -1,7 +1,7 @@
 {
   "name": "EKPSS örnekleri",
   "short_name": "EKPSS",
-  "start_url": "index.html",
+  "start_url": "main.html",
   "display": "standalone",
   "background_color": "cyan",
   "theme_color": "cyan",
