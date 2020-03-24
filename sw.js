@@ -1,6 +1,9 @@
 "use strict";
 const PREF ='ekpss', CACHE = PREF+'1'
 const FILES = [
+  'main.html',
+  'main.css',
+  'main.js',
   'image/icon.png',
   'manifest.json'
 ]
@@ -16,8 +19,7 @@ function installCB(e) {  //CB means call-back
 addEventListener('install', installCB)
 
 function save(req, resp) {
-  if (!req.url.includes("Iqra3")) 
-     return resp;
+  //if (no need to cache) return resp;
   return caches.open(CACHE)
   .then(cache => { // save request
     cache.put(req, resp.clone());

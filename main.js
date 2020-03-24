@@ -1,5 +1,5 @@
 "use strict";
-const VERSION = 'V0.6'
+const VERSION = 'V0.7'
 function mainClick(evt) {
     openQuiz(evt.target.innerText)
 }
