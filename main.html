@@ -15,18 +15,20 @@
 <div id=main class=section>
   <h1>EKPSS</h1>
   <h2>Örnek Sınavlar</h2>
-  <p>Sınav seçmek için ya List item...</p>
-  <ol id=files>
-    <li>Genel Kültür 0</li>
-    <li>Genel Kültür 1</li>
-  </ol>
+  <p>Sınav seçmek için List item kullanalım</p>
+  <ul id=files>
+    <li>Genel Kültür 0</li> <span></span> <br>
+    <li>Genel Kültür 1</li> <span></span>
+  </ul>
   <p>&nbsp;</p>
-  <p>...ya da Select kullanacağız</p>
-  <select id=menu autofocus>
+  <input id=clear type=button value='Cevapları sil'>&emsp;
+  <span>Denemek için -- böyle olmayacak</span>
+<!--   <select id=menu autofocus>
     <option selected disabled>_Sınav seçin_</option>
     <option>Genel Kültür 0</option>
     <option>Genel Kültür 1</option>
   </select>
+ -->
   <pre id=out></pre>
   <button id=add2hs>+</button>
 </div>
@@ -36,11 +38,11 @@
   <h2 id=title></h2>
   <p id=question></p>
   <ul id=items>
-    <li id=a0></li>
-    <li id=a1></li>
-    <li id=a2></li>
-    <li id=a3></li>
-    <li id=a4></li>
+    <li id=a0 class=choice></li>
+    <li id=a1 class=choice></li>
+    <li id=a2 class=choice></li>
+    <li id=a3 class=choice></li>
+    <li id=a4 class=choice></li>
   </ul>
   <p id=result></p>
   <p id=control>
@@ -52,7 +54,7 @@
 </div>
 
 <script src="main.js"></script>
-<script> 
+<script>  //code related to PWA remains on this file
     if (navigator.serviceWorker) {
         navigator.serviceWorker.register('sw.js')
         .then(reg => { console.log('Service worker', reg.scope) })

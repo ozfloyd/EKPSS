@@ -13,17 +13,21 @@
     margin: 10px;
   }
   .section {
+    max-width: 416px;
     width: 98%;
     position: absolute;
-    /* top: 0;  */
     padding: 16px;
   }
   #main { 
-    max-width: 416px;
     height: 100%;
   }
+  #files {
+    white-space: nowrap;
+  }
+  span {
+    font-size: 13px;
+  }
   #quiz {
-    max-width: 416px;
     background: #bdf;
   }
   #score {
@@ -40,10 +44,15 @@
     padding: 20px;
   }
   li {
-    list-style-type: upper-latin;
-    width: 85%;
+    display: inline-block;
+    list-style-type: none;
+    width: 160px;
     margin: 15px;
     padding: 10px;
+  }
+  li.choice {
+    list-style-type: upper-latin;
+    width: 85%;
   }
   button {
     font-weight: bold;

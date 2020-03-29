@@ -1,12 +1,23 @@
 "use strict";
 const VERSION = 'V0.8'
-function mainClick(evt) {
-    openQuiz(evt.target.innerText)
+
+class Question {
+  constructor(soru, dogru, liste) {
+    this.soru = soru; this.dogru = dogru; 
+    this.cevap = null; this.liste = liste
+  }
+  correctAnswer() { return this.dogru == this.cevap }
+  wrongAnswer() { 
+    return this.cevap !== null && this.dogru !== this.cevap 
+  }
+  toString() { return this.soru }
 }
-function mainMenu(evt) {
-    openQuiz(evt.target.value)
-}
-function openQuiz(q) {
+
+// function mainMenu(evt) {openQuiz(evt.target.value)}
+function openQuiz(evt) {
+    quiz.hidden = false
+    quizButton = evt.target
+    let q = quizButton.innerText
     quiz.hidden = false
     readText('sinav'+'/'+q, makeData)
     title.innerText = q
@@ -26,11 +37,23 @@ function makeData(a) {
         let dogru = a[i+6].charCodeAt(0)-65
         //String.fromCharCode(65+dogru)
         console.assert(dogru>=0 && dogru<5)
-        data.push({soru, dogru, liste})
+        data.push(new Question(soru, dogru, liste))
+      //data.push({soru, dogru, liste})
     }
-    // out2.innerText = data.length+' soru -- '+VERSION
-    nc = 0; ne = 0; display(0)  //start
     score.innerText = '.'
+    nc = 0; ne = 0; display(0)  //start
+    let q = quizButton.innerText
+    let u = readStorage()[q] || []
+    if (u.length == 0) return
+    let s = u.pop()
+    setScore(quizButton, s)
+    score.innerText = s
+    for (let i=0; i<data.length; i++) {
+        if (u[i] === null) continue
+        let d = data[i]; d.cevap = u[i]
+        if (d.correctAnswer()) nc++
+        if (d.wrongAnswer()) ne++
+    }
 }
 function display(k) { //k is question number minus one
     clearTimeout(time)
@@ -46,16 +69,15 @@ function display(k) { //k is question number minus one
       do { //find random index of next item
         i = Math.trunc(5*Math.random())
       } while (used.has(i))
-      used.add(i)
+      used.add(i); x.numara = i
       x.innerText = d.liste[i]
-      x.correct = (i == d.dogru)
       setStyle(x)
     }
 }
 function setStyle(x) {
     let d = data[current]
-    if (x.innerText == d.cevap) {
-      let OK = (d.cevap == d.liste[d.dogru])
+    if (d.cevap == x.numara) {
+      let OK = (d.correctAnswer())
       x.style.background = OK? '#118' : '#a00'
       x.style.color = '#ffd'
     } else { //use default colors
@@ -63,7 +85,8 @@ function setStyle(x) {
     }
 }
 function showAnswer() {
-    let x = LI.find(e => e.correct)
+    let d = data[current]
+    let x = LI.find(x => d.dogru == x.numara)
     if (!x) return
     x.style.background = '#afa' //light green
 }
@@ -71,11 +94,11 @@ function checkAnswer(evt) {
     let x = evt.target
     if (x.tagName != 'LI') return
     let d = data[current]
-    if (d.cevap) return //already answered
-    d.cevap = x.innerText
+    if (d.cevap !== null) return //already answered
+    d.cevap = x.numara
     setStyle(x)
     let s1 = '', s2 = ''
-    if (x.correct) {
+    if (d.correctAnswer()) {
       s1 = 'Doğru!'; s2 = "#000"; nc++
     } else {
       s1 = 'Olmadı'; s2 = "#b00"; ne++
@@ -92,17 +115,49 @@ function closeQuiz() {
     if (!confirm(s)) quiz.hidden = true
     else result.innerText = ''
   }
-    let i = data.findIndex(e => !e.cevap)
+    let i = data.findIndex(d => d.cevap === null)
     if (i >= 0) { //incomplete
       display(i)
       let s = (i+1)+'. soru eksik'
       result.innerText = s
       setTimeout(confirmClose, 3)
     } else { //OK, close the page
-      alert('Sınav tamamlandı \n\n'+score.innerText) 
+      let s = score.innerText
+      alert('Sınav tamamlandı \n\n'+s) 
       quiz.hidden = true
+      setScore(quizButton, s)
+      let u = data.map(d => d.cevap)
+      u.push(s) //store s
+      setStorage(title.innerText, u)
     }
-  }
+}
+function readStorage() {
+    return localStorage.ekpss? 
+      JSON.parse(localStorage.ekpss) : {}
+}
+function getStorage(key) {
+    return readStorage()[key]
+}
+function setStorage(key, value) {
+    let x = readStorage()
+    x[key] = value
+    localStorage.ekpss = JSON.stringify(x)
+}
+function clearStorage() {
+    delete localStorage.ekpss
+    for (let e of files.querySelectorAll('span'))
+        e.innerText = ''
+}
+function setScore(elt, s) {
+    elt.nextElementSibling.innerText = s
+}
+function initScores() {
+    let u = readStorage()
+    for (let e of files.querySelectorAll('li')) {
+      let q = e.innerText
+      if (u[q]) setScore(e, u[q].pop())
+    }
+}
 function doKey(evt) {
     let k = evt.key.toUpperCase()
     switch (k) {
@@ -132,8 +187,8 @@ function doKey(evt) {
 function resize() {
     let margin = (w) => Math.trunc((W-w)/2)
     let W = window.innerWidth
-    let w1 = main.clientWidth || main.style.maxWidth
-    let w2 = quiz.clientWidth || quiz.style.maxWidth
+    let w1 = main.clientWidth
+    let w2 = quiz.clientWidth || 420
     let x1 = 0, x2 = 0
     if (w1+w2 < W) { //large
       x1 = margin(w1+w2); x2 = x1+w1
@@ -145,18 +200,20 @@ function resize() {
     console.log('resize', W, x1, x2)
 }
     const LI = [...items.querySelectorAll('LI')]
-    const data = []  //Array of objects
-    var current, //item number >=0
+    const data = []  //Array of Question objects
+    var current,  //Question number >=0
+      quizButton, //Element that started quiz
       nc,   //number of correct answers
       ne,   //number of wrong answers
       time  //value returned from setTimeout
     out.innerText = VERSION
-    leftB.onclick  = () => {display(current-1)}
+    leftB.onclick  = () => { display(current-1) }
     answer.onclick = showAnswer
-    rightB.onclick = () => {display(current+1)}
+    rightB.onclick = () => { display(current+1) }
     items.onclick = checkAnswer
-    files.onclick = mainClick
-    menu.onchange = mainMenu
+    files.onclick = openQuiz
+    clear.onclick = clearStorage
+    // menu.onchange = mainMenu
     document.onkeydown = doKey
     window.onresize = resize
-    resize()
+    resize(); initScores()
