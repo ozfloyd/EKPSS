@@ -1,5 +1,5 @@
 "use strict";
-const VERSION = 'V0.7'
+const VERSION = 'V0.8'
 function mainClick(evt) {
     openQuiz(evt.target.innerText)
 }
@@ -129,6 +129,21 @@ function doKey(evt) {
         default: return
     }
 }
+function resize() {
+    let margin = (w) => Math.trunc((W-w)/2)
+    let W = window.innerWidth
+    let w1 = main.clientWidth || main.style.maxWidth
+    let w2 = quiz.clientWidth || quiz.style.maxWidth
+    let x1 = 0, x2 = 0
+    if (w1+w2 < W) { //large
+      x1 = margin(w1+w2); x2 = x1+w1
+    } else { //narrow
+      x1 = margin(w1); x2 = x1
+    }
+    main.style.left = x1+"px"
+    quiz.style.left = x2+"px"
+    console.log('resize', W, x1, x2)
+}
     const LI = [...items.querySelectorAll('LI')]
     const data = []  //Array of objects
     var current, //item number >=0
@@ -143,3 +158,5 @@ function doKey(evt) {
     files.onclick = mainClick
     menu.onchange = mainMenu
     document.onkeydown = doKey
+    window.onresize = resize
+    resize()

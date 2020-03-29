@@ -1,6 +1,9 @@
-body, h2, h3 { 
+  body { 
     margin: 0;
-    max-width: 440px;
+    background: #7fa;
+  }
+  h2, h3 {
+    margin: 0;
   }
   body, select, option { 
     font: 16px arial;
@@ -9,18 +12,19 @@ body, h2, h3 {
     padding: 8px;
     margin: 10px;
   }
-  #main { 
-    height: 520px;
-    background: #7fa;
+  .section {
+    width: 98%;
+    position: absolute;
+    /* top: 0;  */
     padding: 16px;
+  }
+  #main { 
+    max-width: 416px;
+    height: 100%;
   }
   #quiz {
     max-width: 416px;
-    width: 92%;
-    position: absolute;
-    top: 0; left: 0;
     background: #bdf;
-    padding: 16px;
   }
   #score {
     text-align: right;
@@ -40,7 +44,6 @@ body, h2, h3 {
     width: 85%;
     margin: 15px;
     padding: 10px;
-    border-radius: 15px;
   }
   button {
     font-weight: bold;
@@ -49,12 +52,12 @@ body, h2, h3 {
     border: none;
     width: 60px;
     height: 35px;
-    border-radius: 15px;
   }
   li, button {
     background: #ffd;
     color: #000;
     cursor: pointer;
+    border-radius: 15px;
   }
   #result, #control{
     padding-left: 12%;
