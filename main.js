@@ -18,29 +18,45 @@ function readJSON(u, callback) {
     .then(t => callback(t))
 }
 function fileList(list) {
+    const local = localStorage.ekpssList
+    if (!list) { //initial call
+      if (!local) return //wait for current data
+      list = JSON.parse(local)
+      console.log('initial call -- using local data')
+    } else { //second call
+      list = list.map( d => d.name.substring(0, d.name.length-4))
+      let s = JSON.stringify(list)
+      if (s == local) return //nothing new
+      localStorage.ekpssList = s
+      console.log('second call -- current data saved')
+    }
     const SPAN = ' <span></span> <br>\n'
     // const LI = '</li>'+SPAN+'<li>'
-    // let a = list.map( d => d.name.substring(0, d.name.length-4) )
-    // let s = '<li>'+a.join(LI)+'</li>'+SPAN
-    for (let d of list) {
-      let q = d.name.substring(0, d.name.length-4)
+    // let s = '<li>'+list.join(LI)+'</li>'+SPAN
+    for (let q of list) {
       let id = q.substring(0, 2) //first two chars
-      // console.log(id, q)
       let e = main.querySelector('#'+id)
       if (e) e.innerHTML += '<li>'+q+'</li>'+SPAN
     }
     initScores(); console.log(DE.innerHTML)
 }
+fileList()  //initial call gets the list from localStorage
 const GITHUB = 'https://api.github.com/repos/ozfloyd/EKPSS/contents/'
-readJSON(GITHUB+'sinav/', fileList)
+readJSON(GITHUB+'sinav/', fileList)  //second call -- current data
 
-// function mainMenu(evt) {openQuiz(evt.target.value)}
+function getHashName() {
+    if (!location.hash) return ''
+    //omit first char '#'
+    return decodeURI(location.hash).substring(1)    
+}
 function openQuiz(evt) {
-    quiz.hidden = false
-    quizButton = evt.target
-    let q = quizButton.innerText
+    quiz.hidden = false; quizButton = evt.target
+    location.hash = quizButton.innerText
+}
+function gotoHashPage() { //called when hash is modified
+    let q = getHashName(); if (!q) return
     readText('sinav'+'/'+q+'.txt', makeData)
-    title.innerText = q
+    document.title = q; title.innerText = q
 }
 function readText(u, callback) {
     fetch(u).then(r => r.text())
@@ -62,7 +78,8 @@ function makeData(a) {
     }
     score.innerText = '.'
     nc = 0; ne = 0; display(0)  //start
-    let q = quizButton.innerText
+    let q = quizButton? 
+        quizButton.innerText : getHashName()
     let u = readStorage()[q] || []
     if (u.length == 0) return
     let s = u.pop()
@@ -130,9 +147,12 @@ function checkAnswer(evt) {
     time = setTimeout(() => rightB.onclick(), 3000)
 }
 function closeQuiz() {
+  function doClose() {
+    quiz.hidden = true; quizButton = null; location.hash=''
+  }
   function confirmClose() {
-    let s = result.innerText +'\n\nDevam edelim mi?'
-    if (!confirm(s)) quiz.hidden = true
+    let s = result.innerText +'\n\nSınavı kapatalım mı?'
+    if (confirm(s)) doClose()
     else result.innerText = ''
   }
     let i = data.findIndex(d => d.cevap === null)
@@ -140,11 +160,11 @@ function closeQuiz() {
       display(i)
       let s = (i+1)+'. soru eksik'
       result.innerText = s
-      setTimeout(confirmClose, 3)
+      setTimeout(confirmClose, 10)
     } else { //OK, close the page
       let s = score.innerText
       alert('Sınav tamamlandı \n\n'+s) 
-      quiz.hidden = true
+      doClose()
       let u = data.map(d => d.cevap)
       u.push(s) //store s
       setStorage(title.innerText, u)
@@ -235,5 +255,6 @@ function resize() {
     clear.onclick = clearStorage
     // menu.onchange = mainMenu
     document.onkeydown = doKey
+    window.onhashchange = gotoHashPage
     window.onresize = resize
-    resize()
+    resize(); gotoHashPage()
