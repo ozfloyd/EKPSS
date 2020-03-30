@@ -1,3 +1,4 @@
+  * { box-sizing: border-box;}
   body { 
     margin: 0;
     background: #7fa;
@@ -13,15 +14,13 @@
     margin: 10px;
   }
   .section {
-    max-width: 416px;
-    width: 98%;
+    max-width: 412px;
+    width: 100%;
     position: absolute;
     padding: 16px;
   }
   #main { 
     height: 100%;
-  }
-  #files {
     white-space: nowrap;
   }
   span {
@@ -29,6 +28,8 @@
   }
   #quiz {
     background: #bdf;
+    min-height: 100%;
+    /* overflow-y: scroll; */
   }
   #score {
     text-align: right;
@@ -47,12 +48,14 @@
     display: inline-block;
     list-style-type: none;
     width: 160px;
-    margin: 15px;
+    margin: 12px;
     padding: 10px;
   }
-  li.choice {
+  .choice {
+    display: list-item;
     list-style-type: upper-latin;
     width: 85%;
+    margin: 20px;
   }
   button {
     font-weight: bold;
@@ -81,6 +84,11 @@
     margin: 12px;
     position: fixed;
     bottom: 0;  
+  }
+  #clear { 
+    margin: 12px;
+    position: fixed;
+    bottom: 0;  left:150px;
   }
   #add2hs { 
     border: 1px solid;

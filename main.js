@@ -1,5 +1,5 @@
 "use strict";
-const VERSION = 'V0.9'
+const VERSION = 'V1.00'
 
 class Question {
   constructor(soru, dogru, liste) {
@@ -18,11 +18,18 @@ function readJSON(u, callback) {
     .then(t => callback(t))
 }
 function fileList(list) {
-    let a = list.map(d => d.name)
-    const LI = '</li> <span></span><br>\n<li>'
-    let s = '<li>'+a.join(LI)+'</li>'
-    console.log(s)
-    files.innerHTML = s
+    const SPAN = ' <span></span> <br>\n'
+    // const LI = '</li>'+SPAN+'<li>'
+    // let a = list.map( d => d.name.substring(0, d.name.length-4) )
+    // let s = '<li>'+a.join(LI)+'</li>'+SPAN
+    for (let d of list) {
+      let q = d.name.substring(0, d.name.length-4)
+      let id = q.substring(0, 2) //first two chars
+      // console.log(id, q)
+      let e = main.querySelector('#'+id)
+      if (e) e.innerHTML += '<li>'+q+'</li>'+SPAN
+    }
+    initScores(); console.log(DE.innerHTML)
 }
 const GITHUB = 'https://api.github.com/repos/ozfloyd/EKPSS/contents/'
 readJSON(GITHUB+'sinav/', fileList)
@@ -32,8 +39,7 @@ function openQuiz(evt) {
     quiz.hidden = false
     quizButton = evt.target
     let q = quizButton.innerText
-    quiz.hidden = false
-    readText('sinav'+'/'+q, makeData) //+'.txt'
+    readText('sinav'+'/'+q+'.txt', makeData)
     title.innerText = q
 }
 function readText(u, callback) {
@@ -60,8 +66,7 @@ function makeData(a) {
     let u = readStorage()[q] || []
     if (u.length == 0) return
     let s = u.pop()
-    setScore(quizButton, s)
-    score.innerText = s
+    setScore(quizButton, s); score.innerText = s
     for (let i=0; i<data.length; i++) {
         if (u[i] === null) continue
         let d = data[i]; d.cevap = u[i]
@@ -87,6 +92,7 @@ function display(k) { //k is question number minus one
       x.innerText = d.liste[i]
       setStyle(x)
     }
+    quiz.hidden = false
 }
 function setStyle(x) {
     let d = data[current]
@@ -118,9 +124,9 @@ function checkAnswer(evt) {
       s1 = 'Olmadı'; s2 = "#b00"; ne++
       showAnswer()
     }
-    result.innerText = s1
-    result.style.color = s2
-    score.innerText = nc+' Doğru, '+ne+' Yanlış'
+    result.innerText = s1; result.style.color = s2
+    let t = nc+' Doğru, '+ne+' Yanlış'
+    setScore(quizButton, t); score.innerText = t
     time = setTimeout(() => rightB.onclick(), 3000)
 }
 function closeQuiz() {
@@ -139,7 +145,6 @@ function closeQuiz() {
       let s = score.innerText
       alert('Sınav tamamlandı \n\n'+s) 
       quiz.hidden = true
-      setScore(quizButton, s)
       let u = data.map(d => d.cevap)
       u.push(s) //store s
       setStorage(title.innerText, u)
@@ -159,7 +164,7 @@ function setStorage(key, value) {
 }
 function clearStorage() {
     delete localStorage.ekpss
-    for (let e of files.querySelectorAll('span'))
+    for (let e of main.querySelectorAll('span'))
         e.innerText = ''
 }
 function setScore(elt, s) {
@@ -167,7 +172,7 @@ function setScore(elt, s) {
 }
 function initScores() {
     let u = readStorage()
-    for (let e of files.querySelectorAll('li')) {
+    for (let e of main.querySelectorAll('li')) {
       let q = e.innerText
       if (u[q]) setScore(e, u[q].pop())
     }
@@ -197,6 +202,7 @@ function doKey(evt) {
             rightB.click(); break
         default: return
     }
+    evt.preventDefault()
 }
 function resize() {
     let margin = (w) => Math.trunc((W-w)/2)
@@ -211,7 +217,7 @@ function resize() {
     }
     main.style.left = x1+"px"
     quiz.style.left = x2+"px"
-    console.log('resize', W, x1, x2)
+    //console.log('resize', W, x1, x2)
 }
     const LI = [...items.querySelectorAll('LI')]
     const data = []  //Array of Question objects
@@ -225,9 +231,9 @@ function resize() {
     answer.onclick = showAnswer
     rightB.onclick = () => { display(current+1) }
     items.onclick = checkAnswer
-    files.onclick = openQuiz
+    main.onclick = openQuiz
     clear.onclick = clearStorage
     // menu.onchange = mainMenu
     document.onkeydown = doKey
     window.onresize = resize
-    resize(); initScores()
+    resize()
