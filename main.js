@@ -1,5 +1,5 @@
 "use strict";
-const VERSION = 'V0.8'
+const VERSION = 'V0.9'
 
 class Question {
   constructor(soru, dogru, liste) {
@@ -13,17 +13,31 @@ class Question {
   toString() { return this.soru }
 }
 
+function readJSON(u, callback) {
+    fetch(u).then(r => r.json())
+    .then(t => callback(t))
+}
+function fileList(list) {
+    let a = list.map(d => d.name)
+    const LI = '</li> <span></span><br>\n<li>'
+    let s = '<li>'+a.join(LI)+'</li>'
+    console.log(s)
+    files.innerHTML = s
+}
+const GITHUB = 'https://api.github.com/repos/ozfloyd/EKPSS/contents/'
+readJSON(GITHUB+'sinav/', fileList)
+
 // function mainMenu(evt) {openQuiz(evt.target.value)}
 function openQuiz(evt) {
     quiz.hidden = false
     quizButton = evt.target
     let q = quizButton.innerText
     quiz.hidden = false
-    readText('sinav'+'/'+q, makeData)
+    readText('sinav'+'/'+q, makeData) //+'.txt'
     title.innerText = q
 }
 function readText(u, callback) {
-    fetch(u+".txt").then(r => r.text())
+    fetch(u).then(r => r.text())
     .then(t => callback(t.split('\n')))
 }
 function makeData(a) {
