@@ -1,5 +1,5 @@
 "use strict";
-const VERSION = 'V1.00'
+const VERSION = 'V1.01'
 
 class Question {
   constructor(soru, dogru, liste) {
@@ -8,7 +8,7 @@ class Question {
   }
   correctAnswer() { return this.dogru == this.cevap }
   wrongAnswer() { 
-    return this.cevap !== null && this.dogru !== this.cevap 
+    return this.cevap !== null && this.dogru != this.cevap 
   }
   toString() { return this.soru }
 }
@@ -22,23 +22,21 @@ function fileList(list) {
     if (!list) { //initial call
       if (!local) return //wait for current data
       list = JSON.parse(local)
-      console.log('initial call -- using local data')
+      console.log('initial call -- using local file list')
     } else { //second call
       list = list.map( d => d.name.substring(0, d.name.length-4))
       let s = JSON.stringify(list)
       if (s == local) return //nothing new
       localStorage.ekpssList = s
-      console.log('second call -- current data saved')
+      console.log('second call -- file list was modified')
     }
     const SPAN = ' <span></span> <br>\n'
-    // const LI = '</li>'+SPAN+'<li>'
-    // let s = '<li>'+list.join(LI)+'</li>'+SPAN
     for (let q of list) {
       let id = q.substring(0, 2) //first two chars
       let e = main.querySelector('#'+id)
       if (e) e.innerHTML += '<li>'+q+'</li>'+SPAN
     }
-    initScores(); console.log(DE.innerHTML)
+    initScores(); //console.log(DE.innerHTML)
 }
 fileList()  //initial call gets the list from localStorage
 const GITHUB = 'https://api.github.com/repos/ozfloyd/EKPSS/contents/'
@@ -50,13 +48,21 @@ function getHashName() {
     return decodeURI(location.hash).substring(1)    
 }
 function openQuiz(evt) {
-    quiz.hidden = false; quizButton = evt.target
+    let x = evt.target
+    if (x.tagName != 'LI') return
+    quizButton = x
     location.hash = quizButton.innerText
 }
 function gotoHashPage() { //called when hash is modified
-    let q = getHashName(); if (!q) return
-    readText('sinav'+'/'+q+'.txt', makeData)
-    document.title = q; title.innerText = q
+    let q = getHashName()
+    if (q) { //open
+      title.innerText = q
+      readText('sinav'+'/'+q+'.txt', makeData)
+      document.title = q
+    } else { //close
+      quiz.hidden = true; quizButton = null
+      document.title = 'EKPSS '+VERSION
+    }
 }
 function readText(u, callback) {
     fetch(u).then(r => r.text())
@@ -77,9 +83,13 @@ function makeData(a) {
       //data.push({soru, dogru, liste})
     }
     score.innerText = '.'
-    nc = 0; ne = 0; display(0)  //start
-    let q = quizButton? 
-        quizButton.innerText : getHashName()
+    let q = title.innerText
+       //quizButton? quizButton.innerText : getHashName()
+    nc = 0; ne = 0
+    readAnswers(q)
+    display(0)  //start
+}
+function readAnswers(q) {
     let u = readStorage()[q] || []
     if (u.length == 0) return
     let s = u.pop()
@@ -147,12 +157,9 @@ function checkAnswer(evt) {
     time = setTimeout(() => rightB.onclick(), 3000)
 }
 function closeQuiz() {
-  function doClose() {
-    quiz.hidden = true; quizButton = null; location.hash=''
-  }
   function confirmClose() {
     let s = result.innerText +'\n\nSınavı kapatalım mı?'
-    if (confirm(s)) doClose()
+    if (confirm(s)) location.hash = ''
     else result.innerText = ''
   }
     let i = data.findIndex(d => d.cevap === null)
@@ -164,7 +171,7 @@ function closeQuiz() {
     } else { //OK, close the page
       let s = score.innerText
       alert('Sınav tamamlandı \n\n'+s) 
-      doClose()
+      location.hash = ''
       let u = data.map(d => d.cevap)
       u.push(s) //store s
       setStorage(title.innerText, u)
@@ -184,11 +191,12 @@ function setStorage(key, value) {
 }
 function clearStorage() {
     delete localStorage.ekpss
-    for (let e of main.querySelectorAll('span'))
-        e.innerText = ''
+    for (let e of main.querySelectorAll('li'))
+      setScore(e, '')
 }
 function setScore(elt, s) {
-    elt.nextElementSibling.innerText = s
+    if (elt && elt.nextElementSibling)
+      elt.nextElementSibling.innerText = s
 }
 function initScores() {
     let u = readStorage()
@@ -198,17 +206,19 @@ function initScores() {
     }
 }
 function doKey(evt) {
+    if (evt.altKey || evt.ctrlKey || evt.metaKey) 
+        return //do not preventDefault
     let k = evt.key.toUpperCase()
     switch (k) {
-        case 'A':
+        case 'A': case '1':
             a0.click(); break
-        case 'B':
+        case 'B': case '2':
             a1.click(); break
-        case 'C':
+        case 'C': case '3':
             a2.click(); break
-        case 'D':
+        case 'D': case '4':
             a3.click(); break
-        case 'E':
+        case 'E': case '5':
             a4.click(); break
         case 'HOME':
             display(0); break
