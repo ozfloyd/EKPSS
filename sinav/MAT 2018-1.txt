@@ -1,0 +1,105 @@
+﻿16.Aşağıdakilerden hangisi rakamdır?
+A. 9
+B. 10
+C. 11
+D. 12
+E. 13
+A
+17. 9 onluk, 7 binlik, 3 birlikten oluşan sayı aşağıdakilerden hangisidir?
+A. 973
+B. 793
+C. 7093
+D. 9073
+E. 3709
+C
+18.) 10101 sayısının okunuşu hangi seçenekte doğru verilmiştir?
+A. On yüz bir
+B. On bin yüz bir
+C. Yüz bir bir
+D. Bin bir
+E. Yüz bir bin bir
+B
+19.) 7’den başlayıp 8’er 8’er saydığımızda (7 dahil) 5.sırada hangi sayıyı söyleriz?
+A. 47
+B. 40
+C. 39
+D. 35
+E. 30
+C
+20.) Aşağıdaki ritmik saymalardan hangisinde kuralı bozan bir sayı vardır?
+A. 1-4-7-10-13
+B. 3-5-7-9-11
+C. 4-9-14-19-24
+D. 2-5-8-11-14
+E. 5-7-9-12-14
+E
+21.) A={KASIM} A kümesi kaç elemanlıdır?
+A. 1
+B. 2
+C. 3
+D. 4
+E. 5
+A
+22.) Grafiğe göre aşağıdaki seçeneklerden hangisi doğrudur?
+A. En fazla çay Ordu’da tüketilmektedir.
+B. Ordu ve Rize’de tüketilen tütün Trabzon’da tüketilen Ordu’da tüketilen Fındık ile eşittir.
+C. En az tütün Rize’de tüketilmiştir.
+D. Toplam tüketimi en fazla olan il Ordu’dur.
+E. Ordu ve Giresun’da eşit miktarda tütün tüketilmiştir.
+D
+23.) Aşağıdaki eşleştirmelerden hangisi yanlıştır?
+A. 73 L
+B. 71 L 75 Kuruş
+C. 107 Lira
+D. 406 Lira
+E. 76 Lira 25 Kuruş
+E
+24.) Bir kenarı 4 cm. olan karenin alanı kaç cm2’dir?
+A. 8 cm2
+B. 12 cm2
+C. 16 cm2
+D. 18 cm2
+E. 20 cm2
+C
+25.) Can ilk gün 27 soru çözdü. İkinci gün ilk günden 15 soru fazla soru çözdü. Can iki günde toplam kaç soru çözdü?
+A. 42
+B. 32
+C. 12
+D. 69
+E. 99
+D
+26.) Bir otobüsteki 54 yolcudan ilk şehirde 18 yolcu iniyor. İkinci şehirde 7 yolcu biniyor. Otobüste kaç yolcu vardır?
+A. 51
+B. 53
+C. 79
+D. 65
+E. 43
+E
+27.) Canan 16, Ela 17, Gizem 18 yaşındadır. Bu üç arkadaşın yaşlarının ortalaması kaçtır?
+A. 51
+B. 16
+C. 17
+D. 18
+E. 19
+C
+28.) Beş düzine kalem alan Fatma Öğretmen, bu kalemleri 6 öğrencisine dağıtıyor. Her öğrenciye kaç kalem düşer?
+A. 10
+B. 6
+C. 9
+D. 8
+E. 4
+A
+29.) Bir haftada 63 soru çözen öğrenci bir ayda kaç soru çözer?
+A. 200
+B. 300
+C. 240
+D. 270
+E. 180
+D
+30.) Selma 64 lira parasının 34’ünü harcadı. Geriye kaç lirası kaldı?
+A. 16
+B. 48
+C. 32
+D. 60
+E. 57
+A
