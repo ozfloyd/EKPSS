@@ -1,5 +1,5 @@
 "use strict";
-const VERSION = 'V1.01'
+const VERSION = 'V1.02'
 
 class Question {
   constructor(soru, dogru, liste) {
@@ -29,6 +29,8 @@ function fileList(list) {
       if (s == local) return //nothing new
       localStorage.ekpssList = s
       console.log('second call -- file list was modified')
+      for (let e of main.querySelectorAll('ul')) 
+        e.innerHTML = '' //must be empty
     }
     const SPAN = ' <span></span> <br>\n'
     for (let q of list) {
@@ -36,7 +38,7 @@ function fileList(list) {
       let e = main.querySelector('#'+id)
       if (e) e.innerHTML += '<li>'+q+'</li>'+SPAN
     }
-    initScores(); //console.log(DE.innerHTML)
+    initScores()
 }
 fileList()  //initial call gets the list from localStorage
 const GITHUB = 'https://api.github.com/repos/ozfloyd/EKPSS/contents/'
@@ -60,7 +62,7 @@ function gotoHashPage() { //called when hash is modified
       readText('sinav'+'/'+q+'.txt', makeData)
       document.title = q
     } else { //close
-      quiz.hidden = true; quizButton = null
+      main.hidden = false; quiz.hidden = true; quizButton = null
       document.title = 'EKPSS '+VERSION
     }
 }
@@ -80,7 +82,6 @@ function makeData(a) {
         //String.fromCharCode(65+dogru)
         console.assert(dogru>=0 && dogru<5)
         data.push(new Question(soru, dogru, liste))
-      //data.push({soru, dogru, liste})
     }
     score.innerText = '.'
     let q = title.innerText
@@ -119,7 +120,7 @@ function display(k) { //k is question number minus one
       x.innerText = d.liste[i]
       setStyle(x)
     }
-    quiz.hidden = false
+    main.hidden = window.innerWidth<900; quiz.hidden = false
 }
 function setStyle(x) {
     let d = data[current]
@@ -198,11 +199,24 @@ function setScore(elt, s) {
     if (elt && elt.nextElementSibling)
       elt.nextElementSibling.innerText = s
 }
+function hideChildren(elt, hide) {
+    for (let e of elt.children) 
+      e.style.display = hide? 'none' : ''
+}
 function initScores() {
     let u = readStorage()
     for (let e of main.querySelectorAll('li')) {
       let q = e.innerText
       if (u[q]) setScore(e, u[q].pop())
+    }
+    for (let h3 of main.querySelectorAll('h3')) {
+      let ul = h3.nextElementSibling
+      hideChildren(ul, true)
+      //console.log(ul.id, ul.childElementCount)
+      h3.onclick = () => {
+        let li = ul.querySelector('li')
+        if (li) hideChildren(ul, !li.style.display)
+      }
     }
 }
 function doKey(evt) {

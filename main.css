@@ -1,11 +1,7 @@
   * { box-sizing: border-box;}
-  body { 
-    margin: 0;
-    background: #7fa;
-  }
-  h2, h3 {
-    margin: 0;
-  }
+  body { background: #7fa; }
+  body, h2, h3 { margin: 0; }
+  h2 { margin-bottom: 16px; }
   body, select, option { 
     font: 16px arial;
   }
@@ -29,7 +25,6 @@
   #quiz {
     background: #bdf;
     min-height: 100%;
-    /* overflow-y: scroll; */
   }
   #score {
     text-align: right;
@@ -70,8 +65,10 @@
   li, button {
     background: #ffd;
     color: #000;
-    cursor: pointer;
     border-radius: 15px;
+  }
+  h3, li, button {
+    cursor: pointer;
   }
   #result, #control{
     padding-left: 12%;
@@ -80,16 +77,17 @@
     height: 1em;
   }
   #control {
-    padding-bottom: 20px;
+    position: absolute;
+    bottom: 2em;
   }
   #out { 
     margin: 12px;
-    position: fixed;
+    position: absolute;
     bottom: 0; left: 12px;
   }
   #clear { 
     margin: 12px;
-    position: fixed;
+    position: absolute;
     bottom: 0;  left: 150px;
   }
   #add2hs { 
@@ -97,4 +95,5 @@
     position: fixed;
     bottom: 0; right: 0;
     display: none; 
+    width: 35px;
   }
